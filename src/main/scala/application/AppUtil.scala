@@ -10,6 +10,15 @@ object AppUtil {
     scala.io.StdIn.readLine().toInt
   }
 
+  def confirm(msg: String): Boolean = {
+    print(msg + "[y/n]")
+    scala.io.StdIn.readLine().trim match {
+      case "y" => true
+      case "n" => false
+      case _ => confirm(msg)
+    }
+  }
+
   def choiceShow(shows: Seq[Show]): Show = {
     val show = choice(shows)(pretty)
     show

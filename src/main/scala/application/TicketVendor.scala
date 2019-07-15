@@ -9,8 +9,13 @@ object TicketVendor {
 
     val show = AppUtil.choice(AppUtil.availableShows)(AppUtil.pretty)
 
+    val has3DGlass =
+      if (show.is3DShow)
+        AppUtil.confirm("3Dグラスはお持ちですか")
+      else false
+
     println("購入するチケットを選んでください")
-    val tickets = Ticket.availableTicketsFor(show)
+    val tickets = Ticket.availableTicketsFor(show, has3DGlass)
     val ticket =
       AppUtil.choice(tickets) { t =>
         val idRequirement =

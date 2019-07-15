@@ -23,17 +23,29 @@ case class TicketType(
   requiredIDCards: Set[IDCard],
   // チケットの料金。条件の組み合わせにより複数の価格設定がある
   baseFees: Set[BaseFee]) {
-  def ticketFor(show: Show): Option[Ticket] = {
+  def ticketFor(show: Show, has3DGlass: Boolean): Option[Ticket] = {
+    // 3Dグラス所持の有無を受けとるのではなく、汎用的なExtraFee計算ポリシーを渡すことでより柔軟になる。
+    // が、現段階でそこまでするのはoverabstractionだと判断した。
     val candidates = baseFees.filter(_.availableFor(show))
     if (candidates.isEmpty) {
       None
     } else {
       val chosen = candidates.toSeq.map { base =>
-        Ticket(this, Fee(base.fee, Seq()))
+        Ticket(this, Fee(base.fee, calcExtraFees(show, has3DGlass)))
       }.minBy(_.totalFee)
       Some(chosen)
     }
   }
+  def calcExtraFees(show: Show, has3DGlass: Boolean): Seq[ExtraFee] = {
+    val extras = scala.collection.mutable.ArrayBuffer[ExtraFee]()
+    if (show.is3DShow) {
+      extras += ExtraFee("3D上映", Money(400))
+      if (has3DGlass)
+        extras += ExtraFee("3Dメガネ持参", Money(-100))
+    }
+    extras.toSeq
+  }
+
 }
 
 object TicketType {
@@ -126,8 +138,8 @@ case class Ticket(
     requiredIDCards.nonEmpty
 }
 object Ticket {
-  def availableTicketsFor(show: Show): Seq[Ticket] =
-    TicketType.all.flatMap { tt => tt.ticketFor(show) }
+  def availableTicketsFor(show: Show, has3DGlass: Boolean): Seq[Ticket] =
+    TicketType.all.flatMap { tt => tt.ticketFor(show, has3DGlass) }
 }
 
 // 上映日時。料金計算に必要な性質のみを保持するようにした。
