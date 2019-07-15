@@ -9,6 +9,21 @@ object AppUtil {
     scala.io.StdIn.readLine().toInt
   }
 
+  def choiceShow(shows: Seq[Show]): Show = {
+    val show = choice(shows)(pretty)
+    show
+  }
+
+  def choice[A](items: Seq[A])(format: A => String = { x: A => x.toString }): A = {
+    items.zipWithIndex.foreach {
+      case (show, i) =>
+        println(f"${i + 1}%2d ${format(show)}")
+    }
+    val item = items(readInt())
+    println(s"${format(item)} を選択しました")
+    item
+  }
+
   // 本来なら上映検索サービスからから本日分の未上映回を取得することになりそうだが、本質ではないので省略
   val availableShows = Seq(
     Show(DateTime(false, false, false), false),
