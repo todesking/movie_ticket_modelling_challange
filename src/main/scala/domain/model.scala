@@ -20,7 +20,7 @@ case class TicketType(
   requiredIDCards: Set[IDCard],
   // チケットの料金。条件の組み合わせにより複数の価格設定がある
   feeCandidates: Set[FeeCandidate]) {
-  def feeFor(show: Show): Option[Ticket] = {
+  def ticketFor(show: Show): Option[Ticket] = {
     val fees = feeCandidates.toSeq.filter(_.availableFor(show))
     if (fees.isEmpty) {
       None
@@ -115,7 +115,7 @@ case class Ticket(
 }
 object Ticket {
   def availableTicketsFor(show: Show): Seq[Ticket] =
-    TicketType.all.flatMap { tt => tt.feeFor(show) }
+    TicketType.all.flatMap { tt => tt.ticketFor(show) }
 }
 
 // 上映日時。料金計算に必要な性質のみを保持するようにした。
