@@ -13,6 +13,11 @@ case class TicketType(
   name: String,
   // このチケットが対象とするユーザ
   userConditions: Set[UserCondition],
+  // 要求される身分証。
+  // UserConditionに持たせてもいいかもしれないが、チケット定義の柔軟性・可読性を考えた結果こうなった。
+  // 今でもシネマシティズン(60歳以上)は身分証不要だが
+  // シニアは身分証必要などがあるので……
+  requiredIDCards: Set[IDCard],
   // チケットの料金。条件の組み合わせにより複数の価格設定がある
   feeCandidates: Set[FeeCandidate]) {
   def feeFor(show: Show): Option[Ticket] = {
@@ -37,6 +42,7 @@ object TicketType {
     val tt = TicketType(
       name,
       Set(ucs: _*),
+      Set(ids: _*),
       candidates.map {
         case (scs, fee) =>
           FeeCandidate(scs, Money(fee))
@@ -70,7 +76,7 @@ object TicketType {
     feeInShow(1500)(S.holiday, S.noLateShow),
     feeInShow(1300)(S.holiday, S.lateShow),
     feeInShow(1100)(S.cinemaDay))
-  val `中・高校生` = make("中・高校生")(U.`中学・高校`)(IDCard.`学生証`)(
+  val `中・高校生` = make("中・高校生")(U.`中学・高校`)(IDCard.`生徒手帳`)(
     feeInShow(1000)())
   val `幼児・小学生` = make("幼児（3才以上）・小学生")(U.`幼児・小学生`)()(
     feeInShow(1000)())
@@ -101,7 +107,12 @@ case class FeeCandidate(
 
 case class Ticket(
   ticketType: TicketType,
-  fee: Money)
+  fee: Money) {
+  def requiredIDCards: Set[IDCard] =
+    ticketType.requiredIDCards
+  def idCardRequired: Boolean =
+    requiredIDCards.nonEmpty
+}
 object Ticket {
   def availableTicketsFor(show: Show): Seq[Ticket] =
     TicketType.all.flatMap { tt => tt.feeFor(show) }
