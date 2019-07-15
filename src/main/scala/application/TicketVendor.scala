@@ -9,6 +9,8 @@ object TicketVendor {
 
     val show = AppUtil.choice(AppUtil.availableShows)(AppUtil.pretty)
 
+    // 「3Dグラスの持参が価格に影響するのは3D映画の時だけ」という知識がアプリケーション層に流出しているので困る
+    // def is3Dグラスの持参が価格に影響する: Boolean をShowに生やしたほうがいいのでは
     val has3DGlass =
       if (show.is3DShow)
         AppUtil.confirm("3Dグラスはお持ちですか")
