@@ -1,6 +1,5 @@
 package mtmc.domain
 
-
 case class Fee(base: Money, extras: Seq[ExtraFee]) {
   val total: Money = extras.map(_.amount).foldLeft(base)(_ + _)
 }

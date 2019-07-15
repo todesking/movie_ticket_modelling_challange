@@ -28,6 +28,9 @@ case class TicketType(
     }
   }
   def calcExtraFees(show: Show, has3DGlass: Boolean): Seq[ExtraFee] = {
+    // レイトショーや映画の日等も同様にExtraFeeとして処理することができるかもしれない。
+    // しかし、それらはシネマシティのチケット料金ページでは「追加料金」
+    // という見せ方をしていないので、別々のbaseFeeとして表現した。
     val extras = scala.collection.mutable.ArrayBuffer[ExtraFee]()
     if (show.is3DShow) {
       extras += ExtraFee("3D上映", Money(400))
