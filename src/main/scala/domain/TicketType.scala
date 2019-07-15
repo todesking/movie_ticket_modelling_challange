@@ -21,6 +21,10 @@ case class TicketType(
     if (candidates.isEmpty) {
       None
     } else {
+      // 複数のBaseFeeが該当する場合は、最小の価格を採用する。ということにした。
+      // 現状の仕様であれば、これで簡潔に価格を定義できるでしょう。
+      // 反映画の日(一律10000円)を追加したい場合は、定義時に工夫が必要
+      // (「反映画の日ではない」という条件をその他のBaseFeeに追加すればいける)
       val chosen = candidates.toSeq.map { base =>
         Ticket(this, Fee(base.fee, calcExtraFees(show, has3DGlass)))
       }.minBy(_.totalFee)
