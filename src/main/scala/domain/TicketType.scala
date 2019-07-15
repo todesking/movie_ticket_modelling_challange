@@ -1,7 +1,7 @@
 package mtmc.domain
 
 // チケットの種類(一般、学生、シニアetc)
-// userConditions は FeeCandidate に持たせたほうが柔軟だが、
+// userConditions は BaseFee に持たせたほうが柔軟だが、
 // それが必要なチケット種類を作ることはないでしょうと判断した。
 case class TicketType(
   name: String,
