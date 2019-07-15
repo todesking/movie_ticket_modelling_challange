@@ -16,8 +16,8 @@ object TicketVendor {
         val idRequirement =
           if (t.idCardRequired) t.requiredIDCards.toSet.mkString(" (", ", ", "をご用意ください)")
           else ""
-        f"${t.ticketType.name} ${t.fee.value}%,d円$idRequirement"
+        f"${t.ticketType.name} ${t.fee.total.toInt}%,d円$idRequirement"
       }
-    println(f"${ticket.fee.value}%,d円払え")
+    println(f"${ticket.fee.total.toInt}%,d円払え")
   }
 }

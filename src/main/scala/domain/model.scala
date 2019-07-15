@@ -1,9 +1,12 @@
 package mtmc.domain
 
-case class Money(value: Int)
+case class Money(toInt: Int) {
+  def +(rhs: Money): Money =
+    Money(toInt + rhs.toInt)
+}
 case object Money {
   implicit val moneyOrdering: Ordering[Money] =
-    Ordering.by(_.value)
+    Ordering.by(_.toInt)
 }
 
 // チケットの種類(一般、学生、シニアetc)
@@ -19,14 +22,16 @@ case class TicketType(
   // シニアは身分証必要などがあるので……
   requiredIDCards: Set[IDCard],
   // チケットの料金。条件の組み合わせにより複数の価格設定がある
-  feeCandidates: Set[FeeCandidate]) {
+  baseFees: Set[BaseFee]) {
   def ticketFor(show: Show): Option[Ticket] = {
-    val fees = feeCandidates.toSeq.filter(_.availableFor(show))
-    if (fees.isEmpty) {
+    val candidates = baseFees.filter(_.availableFor(show))
+    if (candidates.isEmpty) {
       None
     } else {
-      val fee = fees.minBy(_.fee)
-      Some(Ticket(this, fee.fee))
+      val chosen = candidates.toSeq.map { base =>
+        Ticket(this, Fee(base.fee, Seq()))
+      }.minBy(_.totalFee)
+      Some(chosen)
     }
   }
 }
@@ -45,7 +50,7 @@ object TicketType {
       Set(ids: _*),
       candidates.map {
         case (scs, fee) =>
-          FeeCandidate(scs, Money(fee))
+          BaseFee(scs, Money(fee))
       }.toSet)
     _all = _all :+ tt
     tt
@@ -96,8 +101,14 @@ object TicketType {
     feeInShow(1100)(S.holiday, S.lateShow))
 }
 
-// あるチケット種類における料金の候補
-case class FeeCandidate(
+case class Fee(base: Money, extras: Seq[ExtraFee]) {
+  val total: Money = extras.map(_.amount).foldLeft(base)(_ + _)
+}
+
+case class ExtraFee(name: String, amount: Money)
+
+// あるチケット種類における基本料金
+case class BaseFee(
   // この価格が適用できる条件
   showConditions: Set[ShowCondition],
   fee: Money) {
@@ -107,7 +118,8 @@ case class FeeCandidate(
 
 case class Ticket(
   ticketType: TicketType,
-  fee: Money) {
+  fee: Fee) {
+  def totalFee: Money = fee.total
   def requiredIDCards: Set[IDCard] =
     ticketType.requiredIDCards
   def idCardRequired: Boolean =
@@ -130,18 +142,24 @@ case class DateTime(
   def isHoliday: Boolean = !isWeekday
 }
 
+case class ShowType(
+  // 爆音上映
+  isLoudSound: Boolean,
+  is3D: Boolean)
+
 // 一回の上映
 case class Show(
+  showType: ShowType,
   // 開始日時
-  startAt: DateTime,
-  // 爆音上映
-  isLoudSoundShow: Boolean) {
+  startAt: DateTime) {
   def lateShowDiscountAvailable: Boolean =
-    startAt.isLate && !isLoudSoundShow
+    startAt.isLate && !showType.isLoudSound
 
   def isWeekday = startAt.isWeekday
   def isHoliday = startAt.isHoliday
   def isCinemaDay = startAt.isCinemaDay
+
+  def isLoudSoundShow = showType.isLoudSound
 }
 
 // 上映に対する条件

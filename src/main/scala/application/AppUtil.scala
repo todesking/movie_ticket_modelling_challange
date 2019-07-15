@@ -1,6 +1,7 @@
 package mtmc.application
 
 import mtmc.domain.Show
+import mtmc.domain.ShowType
 import mtmc.domain.DateTime
 
 object AppUtil {
@@ -26,22 +27,22 @@ object AppUtil {
 
   // 本来なら上映検索サービスからから本日分の未上映回を取得することになりそうだが、本質ではないので省略
   val availableShows = Seq(
-    Show(DateTime(false, false, false), false),
-    Show(DateTime(false, false, false), true),
-    Show(DateTime(false, false, true), false),
-    Show(DateTime(false, false, true), true),
-    Show(DateTime(false, true, false), false),
-    Show(DateTime(false, true, false), true),
-    Show(DateTime(false, true, true), false),
-    Show(DateTime(false, true, true), true),
-    Show(DateTime(true, false, false), false),
-    Show(DateTime(true, false, false), true),
-    Show(DateTime(true, false, true), false),
-    Show(DateTime(true, false, true), true),
-    Show(DateTime(true, true, false), false),
-    Show(DateTime(true, true, false), true),
-    Show(DateTime(true, true, true), false),
-    Show(DateTime(true, true, true), true))
+    Show(ShowType(false, false), DateTime(false, false, false)),
+    Show(ShowType(false, false), DateTime(false, false, false)),
+    Show(ShowType(false, false), DateTime(false, false, true)),
+    Show(ShowType(false, false), DateTime(false, false, true)),
+    Show(ShowType(false, false), DateTime(false, true, false)),
+    Show(ShowType(false, false), DateTime(false, true, false)),
+    Show(ShowType(false, false), DateTime(false, true, true)),
+    Show(ShowType(false, false), DateTime(false, true, true)),
+    Show(ShowType(false, false), DateTime(true, false, false)),
+    Show(ShowType(false, false), DateTime(true, false, false)),
+    Show(ShowType(false, false), DateTime(true, false, true)),
+    Show(ShowType(false, false), DateTime(true, false, true)),
+    Show(ShowType(false, false), DateTime(true, true, false)),
+    Show(ShowType(false, false), DateTime(true, true, false)),
+    Show(ShowType(false, false), DateTime(true, true, true)),
+    Show(ShowType(false, false), DateTime(true, true, true)))
 
   // これはアプリケーションの責務でええやろ
   def pretty(s: Show): String = {
