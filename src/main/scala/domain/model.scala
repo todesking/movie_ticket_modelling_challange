@@ -160,6 +160,7 @@ case class Show(
   def isCinemaDay = startAt.isCinemaDay
 
   def isLoudSoundShow = showType.isLoudSound
+  def is3DShow = showType.is3D
 }
 
 // 上映に対する条件

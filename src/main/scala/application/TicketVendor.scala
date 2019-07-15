@@ -18,6 +18,11 @@ object TicketVendor {
           else ""
         f"${t.ticketType.name} ${t.fee.total.toInt}%,d円$idRequirement"
       }
-    println(f"${ticket.fee.total.toInt}%,d円払え")
+    println("お会計")
+    println(f"* 基本料金 ${ticket.fee.base.toInt}%,d")
+    ticket.fee.extras.foreach { ex =>
+      println(f"* ${ex.name} ${ex.amount.toInt}%,d")
+    }
+    println(f"合計 ${ticket.fee.total.toInt}%,d")
   }
 }
