@@ -28,6 +28,6 @@ object TicketVendor {
     ticket.fee.extras.foreach { ex =>
       println(f"* ${ex.name} ${ex.amount.toInt}%,d")
     }
-    println(f"合計 ${ticket.fee.total.toInt}%,d")
+    println(f"合計 ${ticket.fee.total.toInt}%,d円")
   }
 }
